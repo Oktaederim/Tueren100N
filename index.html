@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DBA-Türen Rechner: Sicherheit in Rettungswegen</title>
+    <!-- Tailwind CSS CDN für schnelles Styling und Responsivität -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Zusätzliches CSS für die Inter-Schriftart und globale Einstellungen */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom styles for range input thumbs and tracks for better visual consistency */
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #2563EB; /* Blue-600 */
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0px 0px 5px rgba(0,0,0,0.2);
+        }
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: #2563EB; /* Blue-600 */
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0px 0px 5px rgba(0,0,0,0.2);
+        }
+        input[type="range"]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 8px;
+            background: #D1D5DB; /* Gray-300 */
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        input[type="range"]::-moz-range-track {
+            width: 100%;
+            height: 8px;
+            background: #D1D5DB; /* Gray-300 */
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Farbcodes für Ergebnisse */
+        .bg-ok { background-color: #D1FAE5; /* green-100 */ }
+        .bg-warning { background-color: #FEF3C7; /* yellow-100 */ }
+        .bg-danger { background-color: #FEE2E2; /* red-100 */ }
+        .text-ok { color: #059669; /* green-600 */ }
+        .text-warning { color: #D97706; /* yellow-700 */ }
+        .text-danger { color: #DC2626; /* red-600 */ }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-900 min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-white p-6 rounded-lg shadow-xl w-full max-w-2xl">
+        <!-- Titel der Anwendung -->
+        <h1 class="text-3xl font-bold text-center text-blue-700 mb-6 rounded-md p-2">DBA-Türen Rechner: Sicherheit in Rettungswegen</h1>
+
+        <div class="space-y-6">
+            <!-- Eingaben -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <!-- Türbreite -->
+                <div>
+                    <label for="doorWidth" class="block text-sm font-medium text-gray-700">Türbreite (B) [m]</label>
+                    <div class="mt-1 flex items-center space-x-2">
+                        <input type="range" id="doorWidthSlider" min="0.80" max="1.50" step="0.01" value="0.95" class="flex-grow">
+                        <input type="number" id="doorWidth" min="0.80" max="1.50" step="0.01" value="0.95" class="w-24 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                </div>
+
+                <!-- Türhöhe -->
+                <div>
+                    <label for="doorHeight" class="block text-sm font-medium text-gray-700">Türhöhe (H) [m]</label>
+                    <div class="mt-1 flex items-center space-x-2">
+                        <input type="range" id="doorHeightSlider" min="1.90" max="2.50" step="0.01" value="2.00" class="flex-grow">
+                        <input type="number" id="doorHeight" min="1.90" max="2.50" step="0.01" value="2.00" class="w-24 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                </div>
+
+                <!-- Differenzdruck -->
+                <div>
+                    <label for="differentialPressure" class="block text-sm font-medium text-gray-700">Differenzdruck (Δp) [Pa]</label>
+                    <div class="mt-1 flex items-center space-x-2">
+                        <input type="range" id="differentialPressureSlider" min="0" max="100" step="1" value="25" class="flex-grow">
+                        <input type="number" id="differentialPressure" min="0" max="100" step="1" value="25" class="w-24 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                </div>
+
+                <!-- Türschließer-Moment -->
+                <div>
+                    <label for="doorCloserMoment" class="block text-sm font-medium text-gray-700">Türschließer-Moment (M₀) [Nm]</label>
+                    <div class="mt-1 flex items-center space-x-2">
+                        <input type="range" id="doorCloserMomentSlider" min="0" max="50" step="1" value="25" class="flex-grow">
+                        <input type="number" id="doorCloserMoment" min="0" max="50" step="1" value="25" class="w-24 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                </div>
+
+                <!-- Abstand b1 -->
+                <div>
+                    <label for="b1Distance" class="block text-sm font-medium text-gray-700">Abstand b1 (Druckangriff) [m]</label>
+                    <div class="mt-1 flex items-center space-x-2">
+                        <input type="range" id="b1DistanceSlider" min="0.1" max="1.50" step="0.01" value="0.85" class="flex-grow">
+                        <input type="number" id="b1Distance" min="0.1" max="1.50" step="0.01" value="0.85" class="w-24 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                </div>
+
+                <!-- Volumenstrom -->
+                <div>
+                    <label for="volumeFlow" class="block text-sm font-medium text-gray-700">Volumenstrom (Q) [m³/s]</label>
+                    <div class="mt-1 flex items-center space-x-2">
+                        <input type="range" id="volumeFlowSlider" min="0" max="10" step="0.1" value="2.0" class="flex-grow">
+                        <input type="number" id="volumeFlow" min="0" max="10" step="0.1" value="2.0" class="w-24 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Raumtyp Auswahl -->
+            <div class="mt-4">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Art des Raumes:</label>
+                <div class="flex items-center space-x-4">
+                    <div class="flex items-center">
+                        <input type="radio" id="roomTypeSafetyStairwell" name="roomType" value="Sicherheitstreppenraum" checked class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                        <label for="roomTypeSafetyStairwell" class="ml-2 block text-sm text-gray-900">Sicherheitstreppenraum</label>
+                    </div>
+                    <div class="flex items-center">
+                        <input type="radio" id="roomTypeFirefighterElevator" name="roomType" value="Feuerwehraufzug" class="focus:ring-blue-500 h-4 w-4 text-blue-600 border-gray-300">
+                        <label for="roomTypeFirefighterElevator" class="ml-2 block text-sm text-gray-900">Feuerwehraufzug</label>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Ergebnisse -->
+            <div class="mt-8 space-y-4">
+                <h2 class="text-xl font-semibold text-blue-600">Ergebnisse</h2>
+
+                <!-- Türfläche -->
+                <div class="p-3 rounded-md shadow-sm border border-gray-200">
+                    <p class="text-sm font-medium text-gray-700">Türfläche (A): <span id="doorAreaResult" class="font-bold text-gray-900"></span> m²</p>
+                </div>
+
+                <!-- Differenzdruck (zur Anzeige des aktuellen Wertes) -->
+                <div class="p-3 rounded-md shadow-sm border border-gray-200">
+                    <p class="text-sm font-medium text-gray-700">Aktueller Differenzdruck (Δp): <span id="displayDifferentialPressureResult" class="font-bold text-gray-900"></span> Pa</p>
+                </div>
+
+                <!-- Betätigungskraft -->
+                <div id="operatingForceDisplay" class="p-3 rounded-md shadow-sm border">
+                    <p class="text-sm font-medium text-gray-700">Berechnete Betätigungskraft (F_T): <span id="operatingForceResult" class="font-bold"></span> N</p>
+                    <p id="operatingForceStatus" class="text-xs font-semibold mt-1"></p>
+                </div>
+
+                <!-- Durchströmungsgeschwindigkeit -->
+                <div id="airflowVelocityDisplay" class="p-3 rounded-md shadow-sm border">
+                    <p class="text-sm font-medium text-gray-700">Berechnete Durchströmungsgeschwindigkeit (v): <span id="airflowVelocityResult" class="font-bold"></span> m/s</p>
+                    <p id="airflowVelocityStatus" class="text-xs font-semibold mt-1"></p>
+                </div>
+            </div>
+
+            <!-- Reset Button -->
+            <div class="mt-6 text-center">
+                <button id="resetButton" class="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-md shadow-sm transition duration-150 ease-in-out">
+                    Werte zurücksetzen
+                </button>
+            </div>
+
+            <!-- Transparenz-Bereich (Formeln & Hinweise) -->
+            <details class="mt-8 bg-gray-50 p-4 rounded-md shadow-inner">
+                <summary class="text-lg font-semibold text-blue-600 cursor-pointer">Formeln & Normative Hinweise</summary>
+                <div class="mt-4 text-gray-700 space-y-3">
+                    <h3 class="font-bold">Formeln:</h3>
+                    <ul class="list-disc list-inside space-y-1 pl-4">
+                        <li>**Türfläche (A):** A = B * H</li>
+                        <li>**Betätigungskraft (F_T):** F_T = (Δp * A * b1 + M0) / b2
+                            <ul class="list-circle list-inside pl-6 text-sm">
+                                <li>b1: Abstand vom Drehpunkt (Scharnier) zum Angriffspunkt der Druckkraft auf der Tür. Dieser Wert kann variieren und wird direkt eingegeben.</li>
+                                <li>b2 = B - 0.12 (Abstand Drehpunkt (Scharnier) zu Türgriff, unter Annahme, dass der Griff 120 mm von der Türkante entfernt ist. B ist die Türbreite).</li>
+                            </ul>
+                        </li>
+                        <li>**Durchströmungsgeschwindigkeit (v):** v = Q / A</li>
+                    </ul>
+
+                    <h3 class="font-bold mt-4">Hinweise zu DIN-Vorschriften und fachlichen Standards:</h3>
+                    <ul class="list-disc list-inside space-y-1 pl-4 text-sm">
+                        <li>**Betriebszustände der DBA:** Der Rechner betrachtet zwei separate Bemessungskriterien einer Druckbelüftungsanlage: Die **Betätigungskraft** für geschlossene Türen (beeinflusst durch den **Differenzdruck**) und die **Durchströmungsgeschwindigkeit** für offene Türen (beeinflusst durch den **Volumenstrom**). Diese sind im Rechner als unabhängige Eingabeparameter dargestellt, da sie unterschiedliche Aspekte der DBA-Funktionalität in verschiedenen Betriebszuständen abbilden.</li>
+                        <li>**Türöffnungskraft:** Maximal 100 N am Türgriff. (MVV TB Anhang 14 Abschnitt 8.1, MHHR 6.2.4, DIN EN 12101-6).</li>
+                        <li>**Strömungsgeschwindigkeit Sicherheitstreppenraum:** Mindestens 2,0 m/s. (MVV TB Anhang 14 Abschnitt 8.2, MHHR 6.2.2).</li>
+                        <li>**Strömungsgeschwindigkeit Feuerwehraufzugsvorraum:** Mindestens 0,75 m/s. (MVV TB Anhang 14 Abschnitt 8.2, MHHR 6.2.2).</li>
+                        <li>**Differenzdruck (Δp):** Empfohlen mindestens 25 Pa. Typisch 30-40 Pa. Kann bis 100 Pa reichen, muss aber die 100 N Grenze für die Türöffnungskraft beachten. (RDA-Arbeitskreis, DIN EN 12101-6).</li>
+                        <li>**Türschließer-Moment (M₀):** Angenommene Momente basierend auf DIN EN 1154 Klassen (z.B. EN 4 ca. 22.5 Nm), genaue Werte sind den Herstellerangaben zu entnehmen.</li>
+                        <li>**Primäre Referenzen:** "DBA-Anwenderleitfaden - Stand Jan. 2024" und "MVV TB Anhang 14".</li>
+                    </ul>
+                </div>
+            </details>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript-Logik für den Rechner
+        document.addEventListener('DOMContentLoaded', () => {
+            // Elemente der Benutzeroberfläche abrufen
+            const doorWidthSlider = document.getElementById('doorWidthSlider');
+            const doorWidthInput = document.getElementById('doorWidth');
+            const doorHeightSlider = document.getElementById('doorHeightSlider');
+            const doorHeightInput = document.getElementById('doorHeight');
+            const differentialPressureSlider = document.getElementById('differentialPressureSlider');
+            const differentialPressureInput = document.getElementById('differentialPressure');
+            const doorCloserMomentSlider = document.getElementById('doorCloserMomentSlider');
+            const doorCloserMomentInput = document.getElementById('doorCloserMoment');
+            const b1DistanceSlider = document.getElementById('b1DistanceSlider'); // Neuer b1 Slider
+            const b1DistanceInput = document.getElementById('b1Distance');     // Neues b1 Input
+            const volumeFlowSlider = document.getElementById('volumeFlowSlider');
+            const volumeFlowInput = document.getElementById('volumeFlow');
+            const resetButton = document.getElementById('resetButton'); // Reset Button
+
+            const roomTypeRadios = document.querySelectorAll('input[name="roomType"]');
+
+            const doorAreaResult = document.getElementById('doorAreaResult');
+            const displayDifferentialPressureResult = document.getElementById('displayDifferentialPressureResult');
+            const operatingForceDisplay = document.getElementById('operatingForceDisplay');
+            const operatingForceResult = document.getElementById('operatingForceResult');
+            const operatingForceStatus = document.getElementById('operatingForceStatus');
+            const airflowVelocityDisplay = document.getElementById('airflowVelocityDisplay');
+            const airflowVelocityResult = document.getElementById('airflowVelocityResult');
+            const airflowVelocityStatus = document.getElementById('airflowVelocityStatus');
+
+            // Speichern der Standardwerte
+            const defaultValues = {
+                doorWidth: doorWidthInput.value,
+                doorHeight: doorHeightInput.value,
+                differentialPressure: differentialPressureInput.value,
+                doorCloserMoment: doorCloserMomentInput.value,
+                b1Distance: b1DistanceInput.value, // Standardwert für b1
+                volumeFlow: volumeFlowInput.value,
+                roomType: document.querySelector('input[name="roomType"]:checked').value
+            };
+
+
+            // Hauptfunktion zur Aktualisierung der Berechnungen und Anzeigen
+            const updateCalculations = () => {
+                // Eingabewerte abrufen (als Zahlen parsen)
+                const B = parseFloat(doorWidthInput.value); // Türbreite
+                const H = parseFloat(doorHeightInput.value); // Türhöhe
+                const deltaP = parseFloat(differentialPressureInput.value); // Differenzdruck
+                const M0 = parseFloat(doorCloserMomentInput.value); // Türschließer-Moment
+                const b1 = parseFloat(b1DistanceInput.value);      // Abstand b1
+                const Q = parseFloat(volumeFlowInput.value); // Volumenstrom
+
+                // Türfläche (A = B * H)
+                const A = B * H;
+                doorAreaResult.textContent = A.toFixed(2); // Auf 2 Dezimalstellen runden
+
+                // Anzeige des aktuellen Differenzdrucks
+                displayDifferentialPressureResult.textContent = deltaP.toFixed(0);
+
+                // Berechnete Betätigungskraft (F_T)
+                // b2 = B - 0.12 (Abstand Drehpunkt zu Türgriff, bei Griff 120 mm von Türkante)
+                // Sicherstellen, dass b2 nicht null oder negativ wird, um Division durch Null zu vermeiden
+                let b2 = B - 0.12;
+                if (b2 <= 0) { // Falls Türbreite <= 0.12m, was physikalisch unwahrscheinlich ist, aber zur Fehlervorbeugung
+                    b2 = 0.01; // Kleinen positiven Wert setzen, um Division durch Null zu vermeiden
+                    console.warn("b2 war <= 0. Setzen auf 0.01 zur Vermeidung von Division durch Null.");
+                }
+
+                let FT = (deltaP * A * b1 + M0) / b2;
+                // Sicherstellen, dass FT nicht negativ wird, falls M0 zu klein ist und deltaP 0 ist (unwahrscheinlich, aber für Robustheit)
+                if (FT < 0) FT = 0;
+
+                operatingForceResult.textContent = FT.toFixed(2);
+
+                // Farbliche Kennzeichnung und Status für Betätigungskraft
+                operatingForceDisplay.classList.remove('bg-ok', 'bg-danger');
+                operatingForceResult.classList.remove('text-ok', 'text-danger');
+                operatingForceStatus.classList.remove('text-ok', 'text-danger');
+
+                if (FT <= 100) {
+                    operatingForceDisplay.classList.add('bg-ok');
+                    operatingForceResult.classList.add('text-ok');
+                    operatingForceStatus.classList.add('text-ok');
+                    operatingForceStatus.textContent = 'Status: OK (≤ 100 N)';
+                } else {
+                    operatingForceDisplay.classList.add('bg-danger');
+                    operatingForceResult.classList.add('text-danger');
+                    operatingForceStatus.classList.add('text-danger');
+                    operatingForceStatus.textContent = 'Status: NICHT OK (> 100 N)! Erhöhte Betätigungskraft.';
+                }
+
+                // Berechnete Durchströmungsgeschwindigkeit (v = Q / A)
+                let v = 0;
+                if (A > 0) { // Division durch Null vermeiden
+                    v = Q / A;
+                }
+                airflowVelocityResult.textContent = v.toFixed(2);
+
+                // Farbliche Kennzeichnung und Status für Durchströmungsgeschwindigkeit
+                airflowVelocityDisplay.classList.remove('bg-ok', 'bg-warning', 'bg-danger');
+                airflowVelocityResult.classList.remove('text-ok', 'text-warning', 'text-danger');
+                airflowVelocityStatus.classList.remove('text-ok', 'text-warning', 'text-danger');
+
+                const selectedRoomType = document.querySelector('input[name="roomType"]:checked').value;
+
+                if (selectedRoomType === 'Sicherheitstreppenraum') {
+                    if (v >= 2.0) {
+                        airflowVelocityDisplay.classList.add('bg-ok');
+                        airflowVelocityResult.classList.add('text-ok');
+                        airflowVelocityStatus.classList.add('text-ok');
+                        airflowVelocityStatus.textContent = 'Status: OK (≥ 2,0 m/s für Sicherheitstreppenraum)';
+                    } else if (v >= 1.0 && v < 2.0) {
+                        airflowVelocityDisplay.classList.add('bg-warning');
+                        airflowVelocityResult.classList.add('text-warning');
+                        airflowVelocityStatus.classList.add('text-warning');
+                        airflowVelocityStatus.textContent = 'Status: Achtung (≥ 1,0 m/s, aber < 2,0 m/s)! Ggf. unter bestimmten Bedingungen zulässig.';
+                    } else {
+                        airflowVelocityDisplay.classList.add('bg-danger');
+                        airflowVelocityResult.classList.add('text-danger');
+                        airflowVelocityStatus.classList.add('text-danger');
+                        airflowVelocityStatus.textContent = 'Status: NICHT OK (< 1,0 m/s)! Strömungsgeschwindigkeit zu gering.';
+                    }
+                } else if (selectedRoomType === 'Feuerwehraufzug') {
+                    if (v >= 0.75) {
+                        airflowVelocityDisplay.classList.add('bg-ok');
+                        airflowVelocityResult.classList.add('text-ok');
+                        airflowVelocityStatus.classList.add('text-ok');
+                        airflowVelocityStatus.textContent = 'Status: OK (≥ 0,75 m/s für Feuerwehraufzugsvorraum)';
+                    } else {
+                        airflowVelocityDisplay.classList.add('bg-danger');
+                        airflowVelocityResult.classList.add('text-danger');
+                        airflowVelocityStatus.classList.add('text-danger');
+                        airflowVelocityStatus.textContent = 'Status: NICHT OK (< 0,75 m/s)! Strömungsgeschwindigkeit zu gering.';
+                    }
+                }
+            };
+
+            // Funktion zur Synchronisierung von Slider und Zahlenfeld
+            const syncInputs = (slider, numberInput) => {
+                slider.addEventListener('input', () => {
+                    numberInput.value = slider.value;
+                    updateCalculations();
+                });
+                numberInput.addEventListener('input', () => {
+                    // Sicherstellen, dass der Wert im gültigen Bereich liegt, bevor er dem Slider zugewiesen wird
+                    let value = parseFloat(numberInput.value);
+                    const min = parseFloat(numberInput.min);
+                    const max = parseFloat(numberInput.max);
+                    if (isNaN(value) || value < min) {
+                        value = min;
+                    } else if (value > max) {
+                        value = max;
+                    }
+                    slider.value = value;
+                    updateCalculations();
+                });
+            };
+
+            // Synchronisierung für alle Eingabepaare
+            syncInputs(doorWidthSlider, doorWidthInput);
+            syncInputs(doorHeightSlider, doorHeightInput);
+            syncInputs(differentialPressureSlider, differentialPressureInput);
+            syncInputs(doorCloserMomentSlider, doorCloserMomentInput);
+            syncInputs(b1DistanceSlider, b1DistanceInput); // b1 Slider synchronisieren
+            syncInputs(volumeFlowSlider, volumeFlowInput);
+
+            // Event-Listener für Radio-Buttons (Raumtyp)
+            roomTypeRadios.forEach(radio => {
+                radio.addEventListener('change', updateCalculations);
+            });
+
+            // Reset-Funktion
+            resetButton.addEventListener('click', () => {
+                doorWidthInput.value = defaultValues.doorWidth;
+                doorWidthSlider.value = defaultValues.doorWidth;
+                doorHeightInput.value = defaultValues.doorHeight;
+                doorHeightSlider.value = defaultValues.doorHeight;
+                differentialPressureInput.value = defaultValues.differentialPressure;
+                differentialPressureSlider.value = defaultValues.differentialPressure;
+                doorCloserMomentInput.value = defaultValues.doorCloserMoment;
+                doorCloserMomentSlider.value = defaultValues.doorCloserMoment;
+                b1DistanceInput.value = defaultValues.b1Distance;
+                b1DistanceSlider.value = defaultValues.b1Distance;
+                volumeFlowInput.value = defaultValues.volumeFlow;
+                volumeFlowSlider.value = defaultValues.volumeFlow;
+
+                // Reset room type radio button
+                document.getElementById('roomTypeSafetyStairwell').checked = true;
+
+                updateCalculations(); // Berechnungen nach Reset aktualisieren
+            });
+
+            // Initialberechnung beim Laden der Seite
+            updateCalculations();
+        });
+    </script>
+</body>
+</html>
