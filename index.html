@@ -67,8 +67,8 @@
                 <div>
                     <label for="doorWidth" class="block text-sm font-medium text-gray-700">Türbreite (B) [m]</label>
                     <div class="mt-1 flex items-center space-x-2">
-                        <input type="range" id="doorWidthSlider" min="0.80" max="1.50" step="0.01" value="0.95" class="flex-grow">
-                        <input type="number" id="doorWidth" min="0.80" max="1.50" step="0.01" value="0.95" class="w-24 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <input type="range" id="doorWidthSlider" min="0.01" max="3.00" step="0.01" value="0.95" class="flex-grow">
+                        <input type="number" id="doorWidth" min="0.01" max="3.00" step="0.01" value="0.95" class="w-24 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                     </div>
                 </div>
 
@@ -76,8 +76,8 @@
                 <div>
                     <label for="doorHeight" class="block text-sm font-medium text-gray-700">Türhöhe (H) [m]</label>
                     <div class="mt-1 flex items-center space-x-2">
-                        <input type="range" id="doorHeightSlider" min="1.90" max="2.50" step="0.01" value="2.00" class="flex-grow">
-                        <input type="number" id="doorHeight" min="1.90" max="2.50" step="0.01" value="2.00" class="w-24 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <input type="range" id="doorHeightSlider" min="0.01" max="3.00" step="0.01" value="2.00" class="flex-grow">
+                        <input type="number" id="doorHeight" min="0.01" max="3.00" step="0.01" value="2.00" class="w-24 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                     </div>
                 </div>
 
@@ -85,8 +85,8 @@
                 <div>
                     <label for="differentialPressure" class="block text-sm font-medium text-gray-700">Differenzdruck (Δp) [Pa]</label>
                     <div class="mt-1 flex items-center space-x-2">
-                        <input type="range" id="differentialPressureSlider" min="0" max="100" step="1" value="25" class="flex-grow">
-                        <input type="number" id="differentialPressure" min="0" max="100" step="1" value="25" class="w-24 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <input type="range" id="differentialPressureSlider" min="0" max="300" step="1" value="25" class="flex-grow">
+                        <input type="number" id="differentialPressure" min="0" max="300" step="1" value="25" class="w-24 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                     </div>
                 </div>
 
@@ -99,12 +99,13 @@
                     </div>
                 </div>
 
-                <!-- Abstand b1 -->
+                <!-- Abstand b2 (Türgriff zu Drehachse) -->
                 <div>
-                    <label for="b1Distance" class="block text-sm font-medium text-gray-700">Abstand b1 (Druckangriff) [m]</label>
+                    <label for="b2Distance" class="block text-sm font-medium text-gray-700">Abstand Türgriff zu Drehachse (b2) [m]</label>
                     <div class="mt-1 flex items-center space-x-2">
-                        <input type="range" id="b1DistanceSlider" min="0.1" max="1.50" step="0.01" value="0.85" class="flex-grow">
-                        <input type="number" id="b1Distance" min="0.1" max="1.50" step="0.01" value="0.85" class="w-24 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                        <!-- min="0.01" for hatches, max will be dynamically set by JS based on B -->
+                        <input type="range" id="b2DistanceSlider" min="0.01" max="1.50" step="0.01" value="0.90" class="flex-grow">
+                        <input type="number" id="b2Distance" min="0.01" max="1.50" step="0.01" value="0.90" class="w-24 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
                     </div>
                 </div>
 
@@ -150,7 +151,7 @@
 
                 <!-- Betätigungskraft -->
                 <div id="operatingForceDisplay" class="p-3 rounded-md shadow-sm border">
-                    <p class="text-sm font-medium text-gray-700">Berechnete Betätigungskraft (F_T): <span id="operatingForceResult" class="font-bold"></span> N</p>
+                    <p class="text-sm font-medium text-gray-700">Berechnete Betätigungskraft (F_T): <span id="operatingForceResult" class="font-bold"></span> N <span id="doorCloserForceContribution" class="text-gray-500 text-sm"></span></p>
                     <p id="operatingForceStatus" class="text-xs font-semibold mt-1"></p>
                 </div>
 
@@ -158,6 +159,11 @@
                 <div id="airflowVelocityDisplay" class="p-3 rounded-md shadow-sm border">
                     <p class="text-sm font-medium text-gray-700">Berechnete Durchströmungsgeschwindigkeit (v): <span id="airflowVelocityResult" class="font-bold"></span> m/s</p>
                     <p id="airflowVelocityStatus" class="text-xs font-semibold mt-1"></p>
+                </div>
+
+                <!-- Durchströmungsvolumen (in m³/h) -->
+                <div class="p-3 rounded-md shadow-sm border border-gray-200">
+                    <p class="text-sm font-medium text-gray-700">Durchströmungsvolumen (Q): <span id="volumeFlowHourResult" class="font-bold text-gray-900"></span> m³/h</p>
                 </div>
             </div>
 
@@ -172,27 +178,38 @@
             <details class="mt-8 bg-gray-50 p-4 rounded-md shadow-inner">
                 <summary class="text-lg font-semibold text-blue-600 cursor-pointer">Formeln & Normative Hinweise</summary>
                 <div class="mt-4 text-gray-700 space-y-3">
-                    <h3 class="font-bold">Formeln:</h3>
+                    <h3 class="font-bold text-base">Formeln:</h3>
                     <ul class="list-disc list-inside space-y-1 pl-4">
                         <li>**Türfläche (A):** A = B * H</li>
                         <li>**Betätigungskraft (F_T):** F_T = (Δp * A * b1 + M0) / b2
                             <ul class="list-circle list-inside pl-6 text-sm">
-                                <li>b1: Abstand vom Drehpunkt (Scharnier) zum Angriffspunkt der Druckkraft auf der Tür. Dieser Wert kann variieren und wird direkt eingegeben.</li>
-                                <li>b2 = B - 0.12 (Abstand Drehpunkt (Scharnier) zu Türgriff, unter Annahme, dass der Griff 120 mm von der Türkante entfernt ist. B ist die Türbreite).</li>
+                                <li>**b1:** Abstand zwischen dem Angriffspunkt der Druckkraft (Mitte Türfläche) und der Drehachse (z.B. Türband). Dieser wird als feste Annahme von **B/2** (halbe Türbreite) verwendet.</li>
+                                <li>**b2:** Abstand vom Türgriff zur Drehachse (Türband). Dieser Wert ist variabel einstellbar. **Hinweis:** b2 muss immer kleiner als die Türbreite (B) sein.</li>
+                                <li>**M0:** Moment des Türschließers.</li>
+                                <li>**Δp:** Differenzdruck.</li>
+                                <li>**A:** Türfläche.</li>
                             </ul>
                         </li>
                         <li>**Durchströmungsgeschwindigkeit (v):** v = Q / A</li>
+                        <li>**Durchströmungsvolumen (Q in m³/h):** Q_h = Q_s * 3600 (Umrechnung von m³/s in m³/h)</li>
                     </ul>
 
-                    <h3 class="font-bold mt-4">Hinweise zu DIN-Vorschriften und fachlichen Standards:</h3>
+                    <h3 class="font-bold mt-4 text-base">Hinweise zu DIN-Vorschriften und fachlichen Standards:</h3>
                     <ul class="list-disc list-inside space-y-1 pl-4 text-sm">
-                        <li>**Betriebszustände der DBA:** Der Rechner betrachtet zwei separate Bemessungskriterien einer Druckbelüftungsanlage: Die **Betätigungskraft** für geschlossene Türen (beeinflusst durch den **Differenzdruck**) und die **Durchströmungsgeschwindigkeit** für offene Türen (beeinflusst durch den **Volumenstrom**). Diese sind im Rechner als unabhängige Eingabeparameter dargestellt, da sie unterschiedliche Aspekte der DBA-Funktionalität in verschiedenen Betriebszuständen abbilden.</li>
-                        <li>**Türöffnungskraft:** Maximal 100 N am Türgriff. (MVV TB Anhang 14 Abschnitt 8.1, MHHR 6.2.4, DIN EN 12101-6).</li>
-                        <li>**Strömungsgeschwindigkeit Sicherheitstreppenraum:** Mindestens 2,0 m/s. (MVV TB Anhang 14 Abschnitt 8.2, MHHR 6.2.2).</li>
-                        <li>**Strömungsgeschwindigkeit Feuerwehraufzugsvorraum:** Mindestens 0,75 m/s. (MVV TB Anhang 14 Abschnitt 8.2, MHHR 6.2.2).</li>
-                        <li>**Differenzdruck (Δp):** Empfohlen mindestens 25 Pa. Typisch 30-40 Pa. Kann bis 100 Pa reichen, muss aber die 100 N Grenze für die Türöffnungskraft beachten. (RDA-Arbeitskreis, DIN EN 12101-6).</li>
-                        <li>**Türschließer-Moment (M₀):** Angenommene Momente basierend auf DIN EN 1154 Klassen (z.B. EN 4 ca. 22.5 Nm), genaue Werte sind den Herstellerangaben zu entnehmen.</li>
-                        <li>**Primäre Referenzen:** "DBA-Anwenderleitfaden - Stand Jan. 2024" und "MVV TB Anhang 14".</li>
+                        <li>**Betriebszustände der DBA:** Der Rechner betrachtet zwei separate Bemessungskriterien einer Druckbelüftungsanlage:
+                            <ul>
+                                <li>Die **Betätigungskraft** für geschlossene Türen (beeinflusst durch den **Differenzdruck**).</li>
+                                <li>Die **Durchströmungsgeschwindigkeit** für offene Türen (beeinflusst durch den **Volumenstrom**).</li>
+                            </ul>
+                            Diese sind im Rechner als unabhängige Eingabeparameter dargestellt, da sie unterschiedliche Aspekte der DBA-Funktionalität in verschiedenen Betriebszuständen abbilden. Ein realer Ventilator muss in der Lage sein, beide Anforderungen zu erfüllen.
+                        </li>
+                        <li>**Türöffnungskraft:** Maximal 100 N am Türgriff. (Referenzen: MVV TB Anhang 14 Abschnitt 8.1, Muster-Hochhaus-Richtlinie (MHHR) 6.2.4, DIN EN 12101-6).</li>
+                        <li>**Strömungsgeschwindigkeit Sicherheitstreppenraum:** Mindestens 2,0 m/s. (Referenzen: MVV TB Anhang 14 Abschnitt 8.2, MHHR 6.2.2).</li>
+                        <li>**Strömungsgeschwindigkeit Feuerwehraufzugsvorraum:** Mindestens 0,75 m/s. (Referenzen: MVV TB Anhang 14 Abschnitt 8.2, MHHR 6.2.2).</li>
+                        <li>**Differenzdruck (Δp):** Empfohlen mindestens 25 Pa. Typisch in der Praxis sind 30-40 Pa. Der Wert kann bis 300 Pa reichen, muss aber die 100 N Grenze für die Türöffnungskraft beachten, da höhere Drücke die Öffnung erschweren. (Referenz: RDA-Arbeitskreis, DIN EN 12101-6).</li>
+                        <li>**Türschließer-Moment (M₀):** Diese Werte sind den Herstellerangaben der Türschließer zu entnehmen (basierend auf DIN EN 1154 Klassen, z.B. EN 4 ca. 22.5 Nm).</li>
+                        <li>**VDI 6019 Blatt 1:** Bietet Berechnungshilfen, erläuternde Grafiken und Beispielrechnungen für Rauch- und Wärmefreihaltung mit Druckbelüftungsanlagen.</li>
+                        <li>**Primäre Referenzen:** "DBA-Anwenderleitfaden - Stand Jan. 2024" und "Muster-Verwaltungsvorschrift Technische Baubestimmungen (MVV TB) Anhang 14".</li>
                     </ul>
                 </div>
             </details>
@@ -211,8 +228,8 @@
             const differentialPressureInput = document.getElementById('differentialPressure');
             const doorCloserMomentSlider = document.getElementById('doorCloserMomentSlider');
             const doorCloserMomentInput = document.getElementById('doorCloserMoment');
-            const b1DistanceSlider = document.getElementById('b1DistanceSlider'); // Neuer b1 Slider
-            const b1DistanceInput = document.getElementById('b1Distance');     // Neues b1 Input
+            const b2DistanceSlider = document.getElementById('b2DistanceSlider'); // Neuer b2 Slider
+            const b2DistanceInput = document.getElementById('b2Distance');     // Neues b2 Input
             const volumeFlowSlider = document.getElementById('volumeFlowSlider');
             const volumeFlowInput = document.getElementById('volumeFlow');
             const resetButton = document.getElementById('resetButton'); // Reset Button
@@ -223,10 +240,13 @@
             const displayDifferentialPressureResult = document.getElementById('displayDifferentialPressureResult');
             const operatingForceDisplay = document.getElementById('operatingForceDisplay');
             const operatingForceResult = document.getElementById('operatingForceResult');
+            const doorCloserForceContribution = document.getElementById('doorCloserForceContribution'); // Neues Element für Türschließer-Anteil
             const operatingForceStatus = document.getElementById('operatingForceStatus');
             const airflowVelocityDisplay = document.getElementById('airflowVelocityDisplay');
             const airflowVelocityResult = document.getElementById('airflowVelocityResult');
             const airflowVelocityStatus = document.getElementById('airflowVelocityStatus');
+            const volumeFlowHourResult = document.getElementById('volumeFlowHourResult'); // Neues Element für m³/h
+
 
             // Speichern der Standardwerte
             const defaultValues = {
@@ -234,7 +254,7 @@
                 doorHeight: doorHeightInput.value,
                 differentialPressure: differentialPressureInput.value,
                 doorCloserMoment: doorCloserMomentInput.value,
-                b1Distance: b1DistanceInput.value, // Standardwert für b1
+                b2Distance: b2DistanceInput.value, // Standardwert für b2
                 volumeFlow: volumeFlowInput.value,
                 roomType: document.querySelector('input[name="roomType"]:checked').value
             };
@@ -247,8 +267,26 @@
                 const H = parseFloat(doorHeightInput.value); // Türhöhe
                 const deltaP = parseFloat(differentialPressureInput.value); // Differenzdruck
                 const M0 = parseFloat(doorCloserMomentInput.value); // Türschließer-Moment
-                const b1 = parseFloat(b1DistanceInput.value);      // Abstand b1
-                const Q = parseFloat(volumeFlowInput.value); // Volumenstrom
+                let b2 = parseFloat(b2DistanceInput.value);      // Abstand b2 (Türgriff zu Drehachse)
+                const Q_s = parseFloat(volumeFlowInput.value); // Volumenstrom in m³/s
+
+                // --- Validierung für b2 ---
+                // b2 muss kleiner als B sein. Mindestabstand 0.01m zur Türbreite, um phys. Sinn zu erhalten und Div/0 zu vermeiden
+                const maxB2 = B - 0.01; 
+                if (b2 >= B) { // If b2 is greater than or equal to B
+                    b2 = maxB2; // Cap b2 at max allowed value
+                    b2DistanceInput.value = b2.toFixed(2); // Update input field
+                    b2DistanceSlider.value = b2.toFixed(2); // Update slider
+                    console.warn("b2 wurde auf max. zulässigen Wert (Türbreite - 0.01m) begrenzt.");
+                }
+                // Also ensure b2 is not less than its min allowed, which is 0.01
+                if (b2 < 0.01) {
+                    b2 = 0.01;
+                    b2DistanceInput.value = b2.toFixed(2);
+                    b2DistanceSlider.value = b2.toFixed(2);
+                    console.warn("b2 wurde auf min. zulässigen Wert (0.01m) begrenzt.");
+                }
+
 
                 // Türfläche (A = B * H)
                 const A = B * H;
@@ -258,19 +296,28 @@
                 displayDifferentialPressureResult.textContent = deltaP.toFixed(0);
 
                 // Berechnete Betätigungskraft (F_T)
-                // b2 = B - 0.12 (Abstand Drehpunkt zu Türgriff, bei Griff 120 mm von Türkante)
-                // Sicherstellen, dass b2 nicht null oder negativ wird, um Division durch Null zu vermeiden
-                let b2 = B - 0.12;
-                if (b2 <= 0) { // Falls Türbreite <= 0.12m, was physikalisch unwahrscheinlich ist, aber zur Fehlervorbeugung
-                    b2 = 0.01; // Kleinen positiven Wert setzen, um Division durch Null zu vermeiden
-                    console.warn("b2 war <= 0. Setzen auf 0.01 zur Vermeidung von Division durch Null.");
-                }
+                // b1 = B/2 (Abstand Drehpunkt zu Kraftangriffspunkt - Mitte Türfläche)
+                const b1 = B / 2;
+                
+                let FT_numerator = (deltaP * A * b1 + M0);
+                let FT = 0;
+                let F_Mo_contribution = 0; // Anteil des Türschließers in N
 
-                let FT = (deltaP * A * b1 + M0) / b2;
+                if (b2 > 0) { // Division durch Null vermeiden (sollte durch b2 validation oben abgedeckt sein, aber doppelt hält besser)
+                    FT = FT_numerator / b2;
+                    F_Mo_contribution = M0 / b2;
+                } else {
+                    FT = 0; // oder ein geeigneter Fehlerwert
+                    F_Mo_contribution = 0;
+                    console.warn("b2 ist Null oder negativ, kann nicht durch Null teilen. FT und F_Mo_contribution auf 0 gesetzt.");
+                }
+                
                 // Sicherstellen, dass FT nicht negativ wird, falls M0 zu klein ist und deltaP 0 ist (unwahrscheinlich, aber für Robustheit)
                 if (FT < 0) FT = 0;
 
                 operatingForceResult.textContent = FT.toFixed(2);
+                doorCloserForceContribution.textContent = `(davon Türschließer: ${F_Mo_contribution.toFixed(2)} N)`;
+
 
                 // Farbliche Kennzeichnung und Status für Betätigungskraft
                 operatingForceDisplay.classList.remove('bg-ok', 'bg-danger');
@@ -292,9 +339,14 @@
                 // Berechnete Durchströmungsgeschwindigkeit (v = Q / A)
                 let v = 0;
                 if (A > 0) { // Division durch Null vermeiden
-                    v = Q / A;
+                    v = Q_s / A;
                 }
                 airflowVelocityResult.textContent = v.toFixed(2);
+
+                // Durchströmungsvolumen in m³/h
+                const Q_h = Q_s * 3600;
+                volumeFlowHourResult.textContent = Q_h.toFixed(2);
+
 
                 // Farbliche Kennzeichnung und Status für Durchströmungsgeschwindigkeit
                 airflowVelocityDisplay.classList.remove('bg-ok', 'bg-warning', 'bg-danger');
@@ -351,17 +403,56 @@
                     } else if (value > max) {
                         value = max;
                     }
+                    numberInput.value = value.toFixed(2); // Fix for number input sometimes not updating decimal places
                     slider.value = value;
                     updateCalculations();
                 });
             };
 
-            // Synchronisierung für alle Eingabepaare
-            syncInputs(doorWidthSlider, doorWidthInput);
+            // Spezielle Synchronisierung für Türbreite, um b2-Range anzupassen
+            doorWidthSlider.addEventListener('input', () => {
+                doorWidthInput.value = doorWidthSlider.value;
+                updateB2Range(); // Update b2 range when doorWidth changes
+                updateCalculations();
+            });
+            doorWidthInput.addEventListener('input', () => {
+                let value = parseFloat(doorWidthInput.value);
+                const min = parseFloat(doorWidthInput.min);
+                const max = parseFloat(doorWidthInput.max);
+                if (isNaN(value) || value < min) {
+                    value = min;
+                } else if (value > max) {
+                    value = max;
+                }
+                doorWidthInput.value = value.toFixed(2);
+                doorWidthSlider.value = value;
+                updateB2Range(); // Update b2 range when doorWidth changes
+                updateCalculations();
+            });
+
+            // Funktion zur dynamischen Anpassung des b2-Sliders und Inputs Max-Wertes
+            const updateB2Range = () => {
+                const currentDoorWidth = parseFloat(doorWidthInput.value);
+                // Max b2 should be slightly less than doorWidth to be physically possible
+                const newMaxB2 = Math.max(0.01, currentDoorWidth - 0.01); // Ensure it's not negative or zero
+
+                b2DistanceSlider.max = newMaxB2;
+                b2DistanceInput.max = newMaxB2;
+
+                // If current b2 value exceeds new max, adjust it
+                let currentB2 = parseFloat(b2DistanceInput.value);
+                if (currentB2 > newMaxB2) {
+                    b2DistanceInput.value = newMaxB2.toFixed(2);
+                    b2DistanceSlider.value = newMaxB2.toFixed(2);
+                }
+            };
+
+
+            // Synchronisierung für andere Eingabepaare
             syncInputs(doorHeightSlider, doorHeightInput);
             syncInputs(differentialPressureSlider, differentialPressureInput);
             syncInputs(doorCloserMomentSlider, doorCloserMomentInput);
-            syncInputs(b1DistanceSlider, b1DistanceInput); // b1 Slider synchronisieren
+            syncInputs(b2DistanceSlider, b2DistanceInput); // b2 Slider synchronisieren (normale sync für Input/Slider)
             syncInputs(volumeFlowSlider, volumeFlowInput);
 
             // Event-Listener für Radio-Buttons (Raumtyp)
@@ -379,8 +470,12 @@
                 differentialPressureSlider.value = defaultValues.differentialPressure;
                 doorCloserMomentInput.value = defaultValues.doorCloserMoment;
                 doorCloserMomentSlider.value = defaultValues.doorCloserMoment;
-                b1DistanceInput.value = defaultValues.b1Distance;
-                b1DistanceSlider.value = defaultValues.b1Distance;
+                
+                // Reset b2 and ensure its range is updated based on default doorWidth
+                b2DistanceInput.value = defaultValues.b2Distance; 
+                b2DistanceSlider.value = defaultValues.b2Distance;
+                updateB2Range(); // Call updateB2Range after resetting doorWidth and b2
+
                 volumeFlowInput.value = defaultValues.volumeFlow;
                 volumeFlowSlider.value = defaultValues.volumeFlow;
 
@@ -391,6 +486,7 @@
             });
 
             // Initialberechnung beim Laden der Seite
+            updateB2Range(); // Set initial b2 max based on default door width
             updateCalculations();
         });
     </script>
